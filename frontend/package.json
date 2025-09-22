@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "axios": "^1.12.2",
+    "date-fns": "^4.1.0",
+    "react-router-dom": "^7.9.1",
+    "tailwindcss": "^4.1.13",
+    "zustand": "^5.0.8"
+  }
+}
