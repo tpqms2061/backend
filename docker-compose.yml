@@ -1,24 +1,24 @@
 services:
   porgres:
     image: postgres:15-alpine
-    container_name: dashboard_postgres
+    container_name: twitter_postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
-      POSTGRES_DB: dashboard_db
+      POSTGRES_DB: twitter_db
     ports:
       - "5434:5432"
     volumes:
-      - dashboard_postgres_data:/var/lib/postgresql/data
+      - twitter_postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     restart: unless-stopped
     networks:
-      - dashboard_network
+      - twitter_network
 
 volumes:
-  dashboard_postgres_data:
+  twitter_postgres_data:
 
 networks:
-  dashboard_network:
+  twitter_network:
     driver: bridge

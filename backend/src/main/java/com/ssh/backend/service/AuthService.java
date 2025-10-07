@@ -6,11 +6,15 @@ import com.ssh.backend.dto.RegisterRequest;
 import com.ssh.backend.dto.UserDto;
 import com.ssh.backend.entity.AuthProvider;
 import com.ssh.backend.entity.User;
+import com.ssh.backend.exception.AuthenticationException;
+import com.ssh.backend.exception.BadRequestException;
 import com.ssh.backend.exception.UserAlreadyExistsException;
 import com.ssh.backend.repository.UserRepository;
 import com.ssh.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,5 +65,38 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .user(UserDto.fromEntity(user))
                 .build();
+    }
+
+
+    // 로그인 서비스
+    public AuthResponse login(AuthRequest request) {
+
+        try {
+            String loginId = request.getEmail() != null ? request.getEmail() : request.getUsername();
+
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginId,
+                            request.getPassword()
+                    )
+            );
+
+            User user = userRepository.findByEmail(loginId)
+                    .or(() -> userRepository.findByUsername(loginId))
+                    .orElseThrow(() -> new AuthenticationException("Authentication failed"));
+
+            String jwtToken = jwtService.generateToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+
+
+            return AuthResponse.builder()
+                    .accessToken(jwtToken)
+                    .refreshToken(refreshToken)
+                    .user(UserDto.fromEntity(user))
+                    .build();
+
+        } catch (BadRequestException e) {
+            throw new AuthenticationException("Invalid email or password");
+        }
     }
 }

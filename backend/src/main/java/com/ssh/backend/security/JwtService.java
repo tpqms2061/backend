@@ -126,59 +126,5 @@ public class JwtService {
 
     private Date extractExpiration(String token) { return extractClaim(token, Claims::getExpiration); }
 
-    @Component
-    @RequiredArgsConstructor
-    public static class JwtAuthenticationService extends OncePerRequestFilter {
 
-        private final JwtService jwtService;
-        private final UserDetailsService userDetailsService;
-
-        @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-            final String authHeader = request.getHeader("Authorization");
-            final String jwt;
-            final String username;
-
-            if (authHeader == null || !authHeader.equals("Bearer")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            jwt = authHeader.substring(7);
-
-            if (jwt.isEmpty() || jwt.equals("null") || jwt.equals("undefined")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            try {
-                username = jwtService.extractUsername(jwt);
-            } catch (Exception e) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            if (username != null || SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                //username을 기반으로 DB에서 사용자 정보(User 엔티티) 를 조회하는 단계
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-                if (jwtService.isTokenValid(jwt, userDetails)) {
-
-                    // Spring Security가 인증된 사용자로 인식하게 만드는 토큰 객체
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
-            }
-
-            filterChain.doFilter(request, response);
-        }
-    }
 }

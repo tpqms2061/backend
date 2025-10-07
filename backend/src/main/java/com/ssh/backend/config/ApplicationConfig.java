@@ -23,7 +23,7 @@ public class ApplicationConfig {
         return loginId -> {
             try {
                 Long userId = Long.parseLong(loginId);
-                userRepository.findById(userId)
+               return userRepository.findById(userId)
                         .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
             } catch (NumberFormatException e) {
                 return userRepository.findByEmail(loginId)
@@ -42,7 +42,7 @@ public class ApplicationConfig {
     }
 
 
-    //비밀번호 암호화: Bcypt로 설정
+    //비밀번호 암호화: Bcrypt로 설정
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
