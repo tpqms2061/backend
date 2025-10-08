@@ -1,3 +1,4 @@
+import usePostStore from "../../store/postStore";
 import PostCard from "./PostCard";
 
 const PostList = ({ posts }) => {

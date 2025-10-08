@@ -93,12 +93,14 @@ const PostCard = ({ post }) => {
                 @{post.user.username}
               </Link>
               <span className="text-gray-500 text-sm">·</span>
-              <span className="text-gray-500 text-sm">
-                {formatDistanceToNow(new Date(post.createdAt), {
-                  addSuffix: true,
-                  locale: ko,
-                })}
-              </span>
+              {post.createdAt && (
+                <span className="text-gray-500 text-sm">
+                  {formatDistanceToNow(new Date(post.createdAt), {
+                    addSuffix: true,
+                    locale: ko,
+                  })}
+                </span>
+              )}
 
               {isOwner && (
                 <div className="ml-auto relative" ref={menuRef}>
