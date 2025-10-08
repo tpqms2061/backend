@@ -51,7 +51,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseGet(() -> {
                     User newUser = new User();
                     newUser.setEmail(finalEmail);
-                    newUser.setUsername(generateUsername(finalName));
+                    newUser.setUsername(generateUsername(finalEmail));
+                    newUser.setFullName(finalName);
                     newUser.setProfileImageUrl(finalAvatarUrl);
                     newUser.setPassword("");
                     newUser.setEnabled(true);
@@ -59,6 +60,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     newUser.setUpdatedAt(LocalDateTime.now());
                     return userRepository.save(newUser);
                 });
+
         if (finalAvatarUrl != null && !finalAvatarUrl.equals(user.getProfileImageUrl())) {
             user.setProfileImageUrl(finalAvatarUrl);
         }
@@ -68,6 +70,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+
 
         //백엔드가 프론트엔드로 토큰을 전달하기 위한 리다이렉트 URL을 조립하는 장치
         String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/oauth2/callback") //리다이렉트할 페이지 경로 지정

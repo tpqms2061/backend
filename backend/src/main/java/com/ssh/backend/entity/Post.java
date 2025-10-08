@@ -13,9 +13,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "posts",
         indexes = {
-                @Index(name = "idx_post_user_id", columnList = "user_id"),
+                @Index(name = "idx_post_author_id", columnList = "author_id"),
                 @Index(name = "idx_post_created_at", columnList = "created_at"),
-                @Index(name = "idx_post_user_created_deleted", columnList = "user_id, created_at, is_deleted"),
         })
 @Data
 @Builder
@@ -36,9 +35,6 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "is_deleted")
-    @Builder.Default
-    private boolean deleted = false;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
