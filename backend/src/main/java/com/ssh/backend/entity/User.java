@@ -72,6 +72,11 @@ public class User implements UserDetails {
     @Builder.Default
     private Set<Post> posts = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Like> likes = new HashSet<>();
+
+
     // 엔티티 저장 전 실행되는 메서드
     // 기본적으로 계정을 활성화(true) 상태로 생성
     @PrePersist
