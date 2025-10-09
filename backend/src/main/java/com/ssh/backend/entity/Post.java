@@ -55,8 +55,10 @@ public class Post {
     public int getLikeCount() {
         return likes.size();
     }
-//    public int getCommentCount() {
-//        return comments.size();
-//    }
+
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Comment> Comments = new HashSet<>();
 }
 

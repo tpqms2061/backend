@@ -3,7 +3,6 @@ package com.ssh.backend.config;
 import com.ssh.backend.security.JwtAuthenticationFilter;
 import com.ssh.backend.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,12 +23,13 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-
     @Value("${frontend.url}")
     private String frontendUrl;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -37,14 +37,20 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/api/auth/**", "/api/images/**", "/oauth2/**", "/login/oauth2/**", "/error").permitAll()
+                                .requestMatchers(
+                                        "/api/auth/**",
+                                        "/api/images/**",
+                                        "/oauth2/**",
+                                        "/login/oauth2/**",
+                                        "/error"
+                                ).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2SuccessHandler))
-
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .successHandler(oAuth2SuccessHandler)
+                )
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

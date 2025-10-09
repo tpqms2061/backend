@@ -24,6 +24,13 @@ public class FollowController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{userId}/follow-status")
+    public ResponseEntity<FollowResponse> getFollowStatus(@PathVariable Long userId) {
+        FollowResponse response = followService.getFollowStatus(userId);
+        return ResponseEntity.ok(response);
+    }
+
+
     @GetMapping("/{userId}/followers")
     public ResponseEntity<Page<UserResponse>> getFollowers(
             @PathVariable Long userId,

@@ -21,6 +21,9 @@ public class PostResponse {
     private UserDto user;
     private LocalDateTime createAt;
     private LocalDateTime updatedAt;
+    private long likeCount;
+    private  boolean isLiked;
+    private Long commentCount;
 
 
     public static PostResponse from(Post post) {

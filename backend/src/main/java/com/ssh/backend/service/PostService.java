@@ -6,6 +6,8 @@ import com.ssh.backend.entity.Post;
 import com.ssh.backend.entity.User;
 import com.ssh.backend.exception.ResourceNotFoundException;
 import com.ssh.backend.exception.UnauthorizedException;
+import com.ssh.backend.repository.CommentRepository;
+import com.ssh.backend.repository.LikeRepository;
 import com.ssh.backend.repository.PostRepository;
 import com.ssh.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     //생성
     public PostResponse createPost(PostRequest request) {
@@ -41,9 +45,20 @@ public class PostService {
     //게시글 목록 조회
     @Transactional(readOnly = true)
     public Page<PostResponse> getPosts(Pageable pageable) {
-        authenticationService.getCurrentUser();
+        User currentUser = authenticationService.getCurrentUser();
         Page<Post> posts = postRepository.findAllWithUser(pageable);
-        return posts.map(PostResponse::from);
+        return posts.map(post -> {
+            PostResponse response = PostResponse.from(post);
+            Long likeCount = likeRepository.countByPostId(post.getId());
+            boolean isLiked = likeRepository.existsByUserAndPost(currentUser, post);
+            Long commentCount = commentRepository.countByPostId(post.getId());
+
+            response.setLikeCount(likeCount);
+            response.setLiked(isLiked);
+            response.setCommentCount(commentCount);
+
+            return response;
+        });
     }
 
     //삭제

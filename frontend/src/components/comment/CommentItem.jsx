@@ -11,9 +11,7 @@ const CommentItem = ({ comment, error }) => {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-1">
-              <span className="font-bold text-sm">
-                {comment.user.fullName}
-              </span>
+              <span className="font-bold text-sm">{comment.user.fullName}</span>
               <span className="text-gray-500 text-sm">
                 @{comment.user.username}
               </span>

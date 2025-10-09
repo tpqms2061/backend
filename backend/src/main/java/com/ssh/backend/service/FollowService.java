@@ -59,6 +59,8 @@ public class FollowService {
                 .followerCount(followersCount)
                 .followingCount(followingCount)
                 .build();
+
+
     }
     /**
      * 팔로워 목록 조회
@@ -77,6 +79,31 @@ public class FollowService {
         });
 
     }
+
+    @Transactional(readOnly = true)
+    public FollowResponse getFollowStatus(Long userId) {
+        User currentUser = authenticationService.getCurrentUser();
+        //조회하고싶은 사람
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+
+        boolean isFollowing =false;
+        if (!currentUser.getId().equals(targetUser.getId())) {
+            isFollowing = followRepository.existsByFollowerAndFollowing(currentUser, targetUser);
+
+        }
+
+        Long followersCount = followRepository.countFollowers(targetUser);
+        Long followingCount = followRepository.countFollowing(targetUser);
+
+        return FollowResponse.builder()
+                .isFollowing(isFollowing)
+                .followerCount(followersCount)
+                .followingCount(followingCount)
+                .build();
+    }
+
     /**
      * 팔로잉 목록 조회
      */
