@@ -74,7 +74,7 @@ public class FollowService {
         User currentUser = authenticationService.getCurrentUser();
 
         return followers.map(follower -> {
-            boolean isFollowing = followRepository.existsByFollowerAndFollowing(currentUser, follower);
+            boolean isFollowing = followRepository.existsByFollowerAndFollowing(currentUser, user);
             return mapToUserResponse(follower, isFollowing);
         });
 
@@ -117,7 +117,7 @@ public class FollowService {
         User currentUser = authenticationService.getCurrentUser();
 
         return following.map(followedUser -> {
-            boolean isFollowing = followRepository.existsByFollowerAndFollowing(currentUser, followedUser);
+            boolean isFollowing = followRepository.existsByFollowerAndFollowing(currentUser, user);
             return mapToUserResponse(followedUser, isFollowing);
         });
 

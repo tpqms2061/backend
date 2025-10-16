@@ -9,16 +9,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "posts",
         indexes = {
-                @Index(name = "idx_post_author_id", columnList = "author_id"),
+                @Index(name = "idx_post_user_id", columnList = "user_id"),
                 @Index(name = "idx_post_created_at", columnList = "created_at"),
+                @Index(name = "idx_post_user_created_deleted", columnList = "user_id, created_at, is_deleted"),
         })
 @Data
 @Builder
@@ -33,16 +32,14 @@ public class Post {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-//    private String imageUrl;
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<Like> likes = new HashSet<>();
-
+   
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -52,13 +49,11 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public int getLikeCount() {
-        return likes.size();
-    }
-
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Like> likes = new HashSet<>();
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     @Builder.Default
     private Set<Comment> Comments = new HashSet<>();
 }
-

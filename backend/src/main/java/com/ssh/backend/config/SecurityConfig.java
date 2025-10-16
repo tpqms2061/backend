@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/api/auth/**",
                                         "/api/images/**",
+                                        "/api/upload/profiles/**",
                                         "/oauth2/**",
                                         "/login/oauth2/**",
                                         "/error"
@@ -59,12 +60,18 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // 허용할 출처
         configuration.setAllowedOrigins(List.of(frontendUrl));
+        // 허용할 HTTP 메서드
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // 허용할 헤더
         configuration.setAllowedHeaders(List.of("*"));
+        // 인증 정보 포함 허용
+
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("Authorization"));
-
+        // 설정 적용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

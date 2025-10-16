@@ -34,6 +34,7 @@ public class PostService {
         Post post = Post.builder()
                 .content(request.getContent())
                 .user(currentUser)
+
                 .build();
 
         Post savedPost = postRepository.save(post);
@@ -60,6 +61,8 @@ public class PostService {
             return response;
         });
     }
+
+    //
 
     //삭제
     public void deletePost(Long postId) {
@@ -92,13 +95,39 @@ public class PostService {
         return PostResponse.from(updatedPost);
     }
 
-//    //게시글 조회
-//    @Transactional(readOnly = true)
-//    public PostResponse getPost(Long postId) {
-//        authenticationService.getCurrentUser();
-//        Post post = postRepository.findById(postId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
-//
-//        return PostResponse.from(post);
-//    }
+    //단일 게시글 조회
+    @Transactional(readOnly = true)
+    public PostResponse getPost(Long postId) {
+        Post post = postRepository.findByIdWithUserAndLikes(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("게시물을 찾을 수 없습니다"));
+
+
+        return PostResponse.from(post);
+    }
+
+    //게시글 갯수
+    @Transactional(readOnly = true)
+    public Long getUserPostCount(Long userId) {
+        authenticationService.getCurrentUser();
+        return postRepository.countByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getUserPosts(Long userId, Pageable pageable) {
+        User currentUser = authenticationService.getCurrentUser();
+        Page<Post> posts = postRepository.findByUserId(userId, pageable);
+        return posts.map(post -> {
+            PostResponse response = PostResponse.from(post);
+            Long likeCount = likeRepository.countByPostId(post.getId());
+            boolean isLiked = likeRepository.existsByUserAndPost(currentUser, post);
+            Long commentCount = commentRepository.countByPostId(post.getId());
+
+            response.setLikeCount(likeCount);
+            response.setLiked(isLiked);
+            response.setCommentCount(commentCount);
+
+
+            return response;
+        });
+    }
 }

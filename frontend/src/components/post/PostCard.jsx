@@ -84,23 +84,23 @@ const PostCard = ({ post }) => {
                 to={`/profile/${post.user.id}`}
                 className="font-bold text-sm hover:underline"
               >
-                {post.user.fullName}
+                {post.user.username}
               </Link>
               <Link
                 to={`/profile/${post.user.id}`}
                 className="text-gray-500 text-sm"
               >
-                @{post.user.username}
+                -{post.user.email}
               </Link>
               <span className="text-gray-500 text-sm">·</span>
-              {post.createdAt && (
-                <span className="text-gray-500 text-sm">
-                  {formatDistanceToNow(new Date(post.createdAt), {
-                    addSuffix: true,
-                    locale: ko,
-                  })}
-                </span>
-              )}
+              <span className="text-gray-500 text-sm">
+                {post.createdAt && !isNaN(new Date(post.createdAt))
+                  ? formatDistanceToNow(new Date(post.createdAt), {
+                      addSuffix: true,
+                      locale: ko,
+                    })
+                  : "방금 전"}
+              </span>
 
               {isOwner && (
                 <div className="ml-auto relative" ref={menuRef}>

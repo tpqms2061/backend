@@ -35,30 +35,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     ) throws IOException, ServletException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
+        //구글
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
         String avatarUrl = oAuth2User.getAttribute("picture");
-        String provider = "";
 
-        // Google 로그인
-        if (oAuth2User.getAttribute("sub") != null) {
-            provider = "GOOGLE";
-            email = (email != null) ? email : "";
-            name = (name != null) ? name : "GoogleUser";
-            avatarUrl = (avatarUrl != null) ? avatarUrl : "";
-        }
-
-        // GitHub 로그인
-        else if (oAuth2User.getAttribute("login") != null) {
-            provider = "GITHUB";
-            String login = oAuth2User.getAttribute("login");
-            email = (email != null) ? email : login + "@github.local";
-            name = (name != null) ? name : login;  // ✅ 이게 핵심 포인트!
+        // 깃허브는 이메일이 없을수도있어 없으면 그에 대한 고유성 보장하는 "@github.local처리
+        if (email == null && oAuth2User.getAttribute("login") != null) {
+            email = oAuth2User.getAttribute("login") + "@github.local";
             avatarUrl = oAuth2User.getAttribute("avatar_url");
         }
 
+        //final -> 확정을 짓는것
         final String finalEmail = email;
-        final String finalName = name;
+        final String finalName = name != null ? name : "User";
         final String finalAvatarUrl = avatarUrl;
 
         User user = userRepository.findByEmail(finalEmail)

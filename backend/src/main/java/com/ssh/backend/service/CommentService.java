@@ -35,7 +35,7 @@ public class CommentService {
                 .build();
 
         comment = commentRepository.save(comment);
-        return CommentResponse.fromEntity(comment);
+        return CommentResponse.fromEntity(comment); 
     }
 
 @Transactional(readOnly = true)

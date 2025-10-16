@@ -11,6 +11,7 @@ import com.ssh.backend.exception.BadRequestException;
 import com.ssh.backend.exception.UserAlreadyExistsException;
 import com.ssh.backend.repository.UserRepository;
 import com.ssh.backend.security.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthService {
 
