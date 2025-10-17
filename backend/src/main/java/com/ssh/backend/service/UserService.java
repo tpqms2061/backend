@@ -1,5 +1,6 @@
 package com.ssh.backend.service;
 
+import com.ssh.backend.dto.UpdateProfileRequest;
 import com.ssh.backend.dto.UserResponse;
 import com.ssh.backend.entity.User;
 import com.ssh.backend.exception.ResourceNotFoundException;
@@ -17,6 +18,9 @@ public class UserService {
     private final FollowRepository followRepository;
     private final AuthenticationService authenticationService;
 
+    /**
+     * 사용자 프로필 조회
+     */
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId)
@@ -46,5 +50,29 @@ public class UserService {
                 .followingCount(followingCount)
                 .isFollowing(isFollowing)
                 .build();
+    }
+
+    /**
+     * 프로필 수정
+     */
+    public UserResponse updateProfile(UpdateProfileRequest request, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다"));
+
+        // null이 아닌 값만 업데이트
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
+        }
+        if (request.getBio() != null) {
+            user.setBio(request.getBio());
+        }
+        if (request.getProfileImageUrl() != null) {
+            user.setProfileImageUrl(request.getProfileImageUrl());
+        }
+
+        User updatedUser = userRepository.save(user);
+
+
+        return mapToUserResponse(updatedUser);
     }
 }

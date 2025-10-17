@@ -42,6 +42,8 @@ public class FileUploadController {
         return ResponseEntity.ok(Map.of("imageUrl", fileUrl));
     }
 
+
+
     /**
      * 업로드된 이미지 서빙
      */
